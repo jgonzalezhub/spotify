@@ -8,28 +8,46 @@ HEADER DE NAVEGACIÓN
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { logout } from '@/lib/auth'; 
+import { logout } from '@/lib/auth';
 
 export default function Header() {
   const router = useRouter();
 
   const handleLogout = () => {
-    logout();          // LLAMAR A LA FUNCIÓN REAL
-    router.push('/');  // Volver a la página de inicio
+    logout();
+    router.push('/');
   };
 
   return (
     <header className="w-full bg-gray-900 p-4 flex justify-between items-center shadow-lg mb-6">
-      <h1 className="text-2xl font-bold text-green-400">
+
+      {/* Nombre de la App */}
+      <h1
+        onClick={() => router.push('/dashboard')}
+        className="text-2xl font-bold text-green-400 cursor-pointer"
+      >
         Spotify Taste Mixer
       </h1>
 
-      <button
-        onClick={handleLogout}
-        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-      >
-        Cerrar sesión
-      </button>
+      <div className="flex items-center gap-3">
+
+        {/* Ir a Playlists Guardadas */}
+        <button
+          onClick={() => router.push('/saved')}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        >
+          MIS PLAYLIST
+        </button>
+
+        {/* Logout */}
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
+          Cerrar sesión
+        </button>
+      </div>
+
     </header>
   );
 }
