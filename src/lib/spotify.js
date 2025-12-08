@@ -1,3 +1,6 @@
+import { getAccessToken } from '@/lib/auth'; //Necesario para llamar a la API de Spotify
+//getAccessToken obtiene el token de acceso almacenado en localStorage
+
 export async function generatePlaylist(preferences) {
   const { artists, genres, decades, popularity } = preferences;
   const token = getAccessToken();
