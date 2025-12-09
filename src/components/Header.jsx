@@ -1,8 +1,7 @@
 /*
 HEADER DE NAVEGACIÓN
 - Muestra el nombre de la app
-- Botón para cerrar sesión
-(borra tokens y vuelve al login)
+- Botón para cerrar sesión (borra tokens y vuelve al login)
 */
 
 'use client';
@@ -29,24 +28,13 @@ export default function Header() {
         Spotify Taste Mixer
       </h1>
 
-      <div className="flex items-center gap-3">
-
-        {/* Ir a Playlists Guardadas */}
-        <button
-          onClick={() => router.push('/saved')}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        >
-          MIS PLAYLIST
-        </button>
-
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-        >
-          Cerrar sesión
-        </button>
-      </div>
+      {/* Botón Logout */}
+      <button
+        onClick={handleLogout}
+        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+      >
+        Cerrar sesión
+      </button>
 
     </header>
   );

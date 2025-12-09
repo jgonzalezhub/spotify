@@ -7,27 +7,59 @@
     - Botón para añadir más canciones
     - Botón compartir playlist
     - Exportar JSON / CSV
+    -Compartir links (copiar al portapapeles)
+    - Ordenar canciones
+    - Editar nombre de la playlist
+    
 */
-import TrackCard from './TrackCard';
 
+'use client';
+
+import { useState } from 'react';
+import TrackCard from './TrackCard';
 
 export default function PlaylistDisplay({
   tracks,
+  playlistName,
+  onNameChange,
+  favorites = [],
+  onToggleFavorite,
   onRemove,
-  onFavorite,
+  onSort,
   onRefresh,
-  onAddMore
+  onAddMore,
 }) {
+  const [copied, setCopied] = useState(false); // ← NUEVO ESTADO
+
+  // Función para copiar links
+  const handleCopyLinks = () => {
+    navigator.clipboard.writeText(
+      tracks
+        .map((t) => t?.external_urls?.spotify)
+        .filter(Boolean)
+        .join('\n')
+    );
+
+    setCopied(true);
+
+    // Volver al texto normal después de 2 segundos
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="bg-gray-900 p-6 rounded-lg shadow-xl">
 
-      {/* Title */}
-      <h2 className="text-2xl font-bold mb-4">🎶 Tu Playlist Generada</h2>
+      {/* Nombre playlist editable */}
+      <input
+        className="w-full bg-gray-800 p-2 rounded mb-4 text-xl font-bold"
+        value={playlistName}
+        onChange={(e) => onNameChange(e.target.value)}
+      />
 
-      {/* Buttons */}
-      <div className="flex gap-4 flex-wrap mb-6">
-        
-        {/* Refrescar */}
+      {/* Botones superiores */}
+      <div className="flex flex-wrap gap-3 mb-6">
+
+        {/* 🔄 Refrescar playlist */}
         <button
           onClick={onRefresh}
           className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white"
@@ -35,7 +67,7 @@ export default function PlaylistDisplay({
           🔄 Refrescar Playlist
         </button>
 
-        {/* Añadir más */}
+        {/* ➕ Añadir más canciones */}
         <button
           onClick={onAddMore}
           className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white"
@@ -43,30 +75,29 @@ export default function PlaylistDisplay({
           ➕ Añadir Más
         </button>
 
-        {/* Compartir */}
+        {/* Compartir links con feedback */}
         <button
-          onClick={() =>
-            navigator.clipboard.writeText(
-              tracks
-                .map(t => t?.external_urls?.spotify)
-                .filter(Boolean)
-                .join("\n")
-            )
-          }
-          className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-white"
+          onClick={handleCopyLinks}
+          className={`px-4 py-2 rounded text-white ${
+            copied
+              ? 'bg-green-600'
+              : 'bg-purple-600 hover:bg-purple-700'
+          }`}
         >
-          🔗 Compartir (copiar links)
+          {copied ? '✔ Copiado!' : '🔗 Compartir (copiar links)'}
         </button>
 
-        {/* Export JSON */}
+        {/* Exportar JSON */}
         <button
           onClick={() => {
             const data = JSON.stringify(tracks, null, 2);
-            const blob = new Blob([data], { type: "application/json" });
+            const blob = new Blob([data], {
+              type: 'application/json',
+            });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
+            const a = document.createElement('a');
             a.href = url;
-            a.download = "playlist.json";
+            a.download = 'playlist.json';
             a.click();
           }}
           className="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded text-black"
@@ -74,18 +105,18 @@ export default function PlaylistDisplay({
           📥 Exportar JSON
         </button>
 
-        {/* Export CSV */}
+        {/* Exportar CSV */}
         <button
           onClick={() => {
             const rows = tracks.map(
-              t => `${t.name},${t.artists[0]?.name || ""},${t.popularity}`
+              (t) => `${t.name},${t.artists?.[0]?.name || ''},${t.popularity}`
             );
-            const csv = "title,artist,popularity\n" + rows.join("\n");
-            const blob = new Blob([csv], { type: "text/csv" });
+            const csv = 'title,artist,popularity\n' + rows.join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
+            const a = document.createElement('a');
             a.href = url;
-            a.download = "playlist.csv";
+            a.download = 'playlist.csv';
             a.click();
           }}
           className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded text-white"
@@ -93,34 +124,46 @@ export default function PlaylistDisplay({
           📄 Exportar CSV
         </button>
 
+        {/* Ordenación */}
+        <select
+          onChange={(e) => onSort(e.target.value)}
+          className="bg-gray-800 px-3 py-2 rounded text-white"
+        >
+          <option value="">Ordenar por…</option>
+          <option value="title-asc">Título A–Z</option>
+          <option value="title-desc">Título Z–A</option>
+          <option value="artist-asc">Artista A–Z</option>
+          <option value="artist-desc">Artista Z–A</option>
+          <option value="random">Aleatorio</option>
+        </select>
+
       </div>
 
-      {/* Track list */}
+      {/* Lista de canciones */}
       <div className="space-y-4">
-        {tracks.map(track => (
-          <div key={track.id} className="relative">
+        {tracks.map((track) => {
+          const isFavorite = favorites.includes(track.id);
 
-            {/* Track Card */}
-            <TrackCard track={track} />
+          return (
+            <div key={track.id} className="relative">
 
-            {/* Remove button */}
-            <button
-              onClick={() => onRemove(track.id)}
-              className="absolute right-2 top-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-            >
-              ✖
-            </button>
+              <TrackCard
+                track={track}
+                isFavorite={isFavorite}
+                onToggleFavorite={onToggleFavorite}
+              />
 
-            {/* Favorite button */}
-            <button
-              onClick={() => onFavorite(track)}
-              className="absolute right-2 bottom-2 bg-yellow-500 hover:bg-yellow-600 text-black px-3 py-1 rounded"
-            >
-              ⭐
-            </button>
+              {/* Botón eliminar */}
+              <button
+                onClick={() => onRemove(track.id)}
+                className="absolute right-3 bottom-3 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+              >
+                ✖
+              </button>
 
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

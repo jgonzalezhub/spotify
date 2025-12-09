@@ -23,7 +23,7 @@ export default function ArtistWidget({ selectedItems, onSelect }) {
   const [results, setResults] = useState([]); // Resultados de búsqueda
   const [loading, setLoading] = useState(false); // Estado de carga
 
-  // ⏳ Debounce: evita hacer demasiadas peticiones mientras el usuario escribe
+  // evita hacer demasiadas peticiones mientras el usuario escribe
   useEffect(() => {
     const delay = setTimeout(() => {
       if (query.trim().length > 0) searchArtists(query);
