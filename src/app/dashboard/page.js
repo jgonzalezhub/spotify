@@ -1,3 +1,12 @@
+/*
+DASHBOARD PRINCIPAL
+- Permite seleccionar filtros para generar una playlist
+- Muestra la playlist generada con opciones para gestionarla
+- Muestra un resumen rápido del historial de playlists generadas
+*/
+
+
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -295,8 +304,8 @@ export default function DashboardPage() {
           onRefresh={handleRefreshPlaylist}
           onAddMore={handleAddMoreTracks}
           preferences={lastPreferences}
-          onSave={handleSaveCurrentPlaylist}           // ⬅ Guardar playlist
-          onGenerateFromFavorites={handleGenerateFromFavorites} // ⬅ botón extra dentro
+          onSave={handleSaveCurrentPlaylist}           
+          onGenerateFromFavorites={handleGenerateFromFavorites} 
         />
       )}
 

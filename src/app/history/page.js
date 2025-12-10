@@ -1,3 +1,22 @@
+
+/*
+HISTORIAL DE PLAYLISTS GENERADAS
+- Muestra una lista de playlists generadas previamente
+- Permite renombrar, eliminar y vaciar el historial
+- Permite guardar entradas del historial en "Mis Playlists"
+
+Motivos:
+- Permite a los usuarios revisar y reutilizar playlists generadas anteriormente.
+- Facilita la gestión de playlists sin sobrecargar el dashboard principal.
+- Mejora la experiencia del usuario al ofrecer un historial accesible.
+
+Ventajas:
+- Organización: Mantiene un registro claro de las actividades del usuario.
+- Usabilidad: Los usuarios pueden gestionar su historial de manera eficiente.
+- Flexibilidad: Permite guardar playlists importantes directamente desde el historial.
+- Escalabilidad: Posibilita futuras mejoras en la gestión del historial sin afectar otras áreas de la app.
+*/
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -40,12 +59,37 @@ export default function HistoryPage() {
     updateStorage([]);
   };
 
+  // Guardar una entrada del historial en Mis Playlists
+  const handleSaveToMyPlaylists = (entry) => {
+    if (!entry) return;
+
+    let saved = [];
+    try {
+      saved = JSON.parse(localStorage.getItem("saved_playlists") || "[]");
+    } catch {
+      saved = [];
+    }
+
+    const newEntry = {
+      ...entry,
+      id:
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : String(Date.now()),
+      createdAt: new Date().toISOString()
+    };
+
+    const updated = [newEntry, ...saved];
+    localStorage.setItem("saved_playlists", JSON.stringify(updated));
+
+    alert("Playlist guardada en 'Mis Playlists'");
+  };
+
   // Renderizar filtros usados
   const renderFilters = (filters) => {
     if (!filters) return null;
     const { artists, genres, decades, popularity, mood } = filters;
 
-    // Mostrar resumen de filtros
     return (
       <div className="mt-2 bg-gray-800 p-3 rounded text-xs">
         <p><strong>Artistas:</strong> {artists.length ? artists.map(a => a.name).join(', ') : '—'}</p>
@@ -102,6 +146,8 @@ export default function HistoryPage() {
                       {h.tracks.length} canciones
                     </p>
                   </div>
+
+                  {/* Botón para eliminar */}
                   <button
                     onClick={() => handleDeleteEntry(h.id)}
                     className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-sm"
@@ -110,7 +156,15 @@ export default function HistoryPage() {
                   </button>
                 </div>
 
-                {/* Filtros usados en esa generación */}
+                {/* Botón para guardar en Mis Playlists */}
+                <button
+                  onClick={() => handleSaveToMyPlaylists(h)}
+                  className="mt-3 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+                >
+                  💾 Guardar en Mis Playlists
+                </button>
+
+                {/* Filtros usados */}
                 {renderFilters(h.filters)}
               </div>
             ))}
