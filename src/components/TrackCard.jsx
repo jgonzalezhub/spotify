@@ -6,6 +6,7 @@ TRACK CARD
 - Título
 - Artistas
 - Estrella de favorito (llena/vacía)
+- Preview de audio (si está disponible)
 */
 
 export default function TrackCard({ track, isFavorite, onToggleFavorite }) {

@@ -28,13 +28,26 @@ export default function Header() {
         Spotify Taste Mixer
       </h1>
 
-      {/* Botón Logout */}
-      <button
-        onClick={handleLogout}
-        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-      >
-        Cerrar sesión
-      </button>
+      {/* BOTONES DERECHA */}
+      <div className="flex items-center gap-3">
+
+        {/*Mis Playlists */}
+        <button
+          onClick={() => router.push('/saved')}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+        >
+          📂 Mis Playlists
+        </button>
+
+        {/* Botón Logout */}
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+        >
+          Cerrar sesión
+        </button>
+
+      </div>
 
     </header>
   );
